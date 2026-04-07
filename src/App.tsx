@@ -7,6 +7,7 @@ function App() {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
   const [selectedProducts, setSelectedProducts] = useState<string>('');
+  const [products, setProducts] = useState<any[]>(data.products);
   const navigate = useNavigate();
   const location = useLocation();
   const categoryFromUrl = new URLSearchParams(location.search).get('category');
@@ -19,15 +20,39 @@ function App() {
   useEffect(() => {
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
+      const filteredSubCategories = data.subCategories.filter(
+        (item) => item.categoryId === categoryFromUrl,
+      );
+      const filteredBrands = data.brands.filter((item) =>
+        filteredSubCategories.some((sub) => sub.id === item.subCategoryId),
+      );
+      const filteredProducts = data.products.filter((item) =>
+        filteredBrands.some((brand) => brand.id === item.brandId),
+      );
+      setProducts(filteredProducts);
     }
     if (subCategoryFromUrl) {
       setSelectedSubCategory(subCategoryFromUrl);
+      const filteredBrands = data.brands.filter(
+        (item) => item.subCategoryId === subCategoryFromUrl,
+      );
+      const filteredProducts = data.products.filter((item) =>
+        filteredBrands.some((brand) => brand.id === item.brandId),
+      );
+      setProducts(filteredProducts);
     }
     if (brandFromUrl) {
       setSelectedBrand(brandFromUrl);
+      const filteredProducts = data.products.filter(
+        (item) => item.brandId === brandFromUrl,
+      );
+      setProducts(filteredProducts);
     }
     if (productsFromUrl) {
       setSelectedProducts(productsFromUrl);
+      setProducts(
+        data.products.filter((item) => item.brandId === brandFromUrl),
+      );
     }
   }, [categoryFromUrl, subCategoryFromUrl, brandFromUrl, productsFromUrl]);
 
@@ -76,30 +101,34 @@ function App() {
   };
 
   const handleReset = () => {
-    const params = new URLSearchParams(location.search);
     setSelectedCategory('');
     setSelectedSubCategory('');
     setSelectedBrand('');
     setSelectedProducts('');
+    setProducts(data.products);
+    const params = new URLSearchParams(location.search);
     params.delete('category');
     params.delete('subCategory');
     params.delete('brand');
     params.delete('products');
+    navigate({ search: params.toString() });
   };
 
   return (
-    <div className="App min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl p-6">
-        <div className="combobox grid grid-cols-1 md:grid-cols-4 gap-6">
-          <section className="main flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
+    <div className="App min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 flex flex-col items-center p-6 gap-8">
+      {/* FILTER CARD */}
+      <div className="w-full max-w-6xl bg-white/90 backdrop-blur shadow-xl rounded-3xl p-8 border border-gray-200">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">
+          Filter Products
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <section className="flex flex-col gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Main Category
             </label>
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-              name="main-categories"
-              id="main"
+              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               value={selectedCategory}
               onChange={handleChangeCategory}
             >
@@ -114,15 +143,13 @@ function App() {
             </select>
           </section>
 
-          <section className="sub flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
+          <section className="flex flex-col gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Sub Category
             </label>
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 disabled:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm shadow-sm disabled:bg-gray-100 disabled:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               disabled={selectedCategory === ''}
-              name="sub-categories"
-              id="sub"
               value={selectedSubCategory}
               onChange={handleChangeSubCategory}
             >
@@ -139,15 +166,13 @@ function App() {
             </select>
           </section>
 
-          <section className="brands flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Brands
+          <section className="flex flex-col gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Brand
             </label>
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 disabled:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm shadow-sm disabled:bg-gray-100 disabled:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               disabled={selectedSubCategory === ''}
-              name="brands"
-              id="brands"
               value={selectedBrand}
               onChange={handleChangeBrand}
             >
@@ -164,15 +189,13 @@ function App() {
             </select>
           </section>
 
-          <section className="products flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Products
+          <section className="flex flex-col gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Product
             </label>
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 disabled:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm shadow-sm disabled:bg-gray-100 disabled:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               disabled={selectedBrand === ''}
-              name="products"
-              id="products"
               value={selectedProducts}
               onChange={handleChangeProducts}
             >
@@ -190,13 +213,33 @@ function App() {
           </section>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-8 flex justify-end items-center">
           <button
             onClick={handleReset}
-            className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            className="px-6 py-2.5 bg-linear-to-r from-red-500 to-red-600 text-white text-sm font-medium rounded-xl shadow hover:shadow-md hover:scale-[1.02] active:scale-95 transition"
           >
-            Reset
+            Reset Filters
           </button>
+        </div>
+      </div>
+
+      {/* PRODUCT LIST */}
+      <div className="w-full max-w-6xl">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Products</h1>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          {products.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition"
+            >
+              <div className="h-32 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400 text-sm">
+                Image
+              </div>
+
+              <p className="text-sm font-semibold text-gray-800">{item.name}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
