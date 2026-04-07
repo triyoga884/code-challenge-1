@@ -1,3 +1,70 @@
+# Code Challenge 1
+
+A small Vite + React + TypeScript demo that implements a cascading selector (Main Category → Sub Category → Brand → Products). Selections are stored in the URL query parameters so the UI is shareable and deep-linkable.
+
+**Tech Stack:**
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+## Features
+
+- Cascading selects: category → sub-category → brand → product
+- URL-sync: selections reflect in query params (`category`, `subCategory`, `brand`, `products`)
+- Reset button clears selections and (intended) query params
+
+## Getting Started
+
+Prerequisites: Node.js (or bun/pnpm) and a package manager.
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run development server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview production build:
+
+```bash
+npm run preview
+```
+
+Lint the project:
+
+```bash
+npm run lint
+```
+
+## Project Structure (important files)
+
+- [src/App.tsx](src/App.tsx) — main UI with selects and URL sync logic
+- [src/main.tsx](src/main.tsx) — app entry
+- [src/assets/data.json](src/assets/data.json) — sample data used to populate selects
+- `vite.config.ts`, `tsconfig.json` — build and TypeScript configs
+
+## Notes
+
+- The app reads and writes the following query parameters: `category`, `subCategory`, `brand`, `products`.
+- The `Reset` button clears in-memory selection state; to persist the URL reset behavior you can call `navigate({ search: '' })` after clearing params in `handleReset` (see `src/App.tsx`).
+
+## License
+
+This repository is provided as-is for the coding challenge.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -40,15 +107,15 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -69,5 +136,5 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
